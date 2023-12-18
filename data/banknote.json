@@ -1,0 +1,13 @@
+{
+    "source": "data/banknote.txt",
+    "header": "None",
+    "autoscale": "True",
+    "attributes": [0, 1],
+    "split": {
+        "type": "random",
+        "fraction": 0.7
+    },
+    "target": {
+        "column": 4
+    }
+}
