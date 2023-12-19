@@ -1,6 +1,8 @@
 test:
 	python -m pytest -v --cov=protolearn --cov-report=term-missing protolearn/tests
 
+get-data: get-banknote-data get-kc-data
+
 get-banknote-data:
 	wget https://archive.ics.uci.edu/static/public/267/banknote+authentication.zip
 	unzip banknote+authentication.zip
