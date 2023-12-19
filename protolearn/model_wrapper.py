@@ -94,3 +94,6 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
 
     def get_prototype_values(self):
         return self._model.layers[-1].weights[0].numpy().flatten()
+    
+    def get_importances(self, X):
+        return self._importance_model.predict(X)
