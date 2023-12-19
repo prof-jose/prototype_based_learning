@@ -4,3 +4,5 @@ tensorflow
 tensorflow-probability
 scikit-learn
 pandas
+plotly
+matplotlib
