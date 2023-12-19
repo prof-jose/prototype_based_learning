@@ -1,6 +1,6 @@
 {
     "source": "data/processed/kc_house_data_per_sqft.csv",
-    "attributes": ["lat", "lng"],
+    "attributes": ["lat", "long"],
     "autoscale": "True",
     "split": {
         "type": "sequential",
