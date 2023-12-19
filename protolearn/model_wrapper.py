@@ -110,8 +110,7 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
                 values=vals,
                 reg_constant=self.reg_constant,
                 scale=self.scale,
-                trainable_scales=self.trainable_scales,
-                projection=self.projection
+                trainable_scales=self.trainable_scales
                 )
 
             self._model.compile(
