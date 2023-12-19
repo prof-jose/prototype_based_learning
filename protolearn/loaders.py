@@ -14,11 +14,21 @@ class Loader():
     def __init__(self, config, working_dir="", seed=0):
         """
         Data loader class.
+
+        Parameters
+        ----------
+        config : dict or str
+            Configuration of the data loader.
+            If str, it is the path to the configuration file.
+
+        working_dir : str
+            Path to the working directory.
+            This is the base directory for all paths in the configuration.
         """
 
         self._working_dir = working_dir
         self._seed = seed
-        if type(config) == str:
+        if type(config) is str:
             with open(config) as f:
                 self._config = json.load(f)
         else:
@@ -58,6 +68,19 @@ class Loader():
         self._data = self._autoscale(self._data)
 
     def _autoscale(self, data):
+        """
+        Autoscale the data if specified in the configuration.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Data to be autoscaled.
+
+        Returns
+        -------
+        output : pandas.DataFrame
+            Autoscaled data.
+        """
         output = data.copy()
         if 'autoscale' in self._config:
             if self._config['autoscale'] == "True":
@@ -72,6 +95,15 @@ class Loader():
         return output
 
     def _get_necessary_cols(self):
+        """
+        Get the column names that are necessary to load the data from the
+        source.
+
+        Returns
+        -------
+        necessary_cols : list
+            List of column names.
+        """
         # TODO: Consider the case where attributes are not specified,
         # but target is
         if 'attributes' not in self._config:
@@ -86,6 +118,20 @@ class Loader():
         return necessary_cols
 
     def get_splits(self):
+        """
+        Get the train and test splits according to the configuration.
+
+        Returns
+        -------
+        X_train : pandas.DataFrame
+            Training data.
+        X_test : pandas.DataFrame
+            Test data.
+        y_train : pandas.DataFrame
+            Training target values.
+        y_test : pandas.DataFrame
+            Test target values.
+        """
         if 'split' in self._config:
             # Sequential split
             if self._config['split']['type'] == 'sequential':
