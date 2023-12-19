@@ -1,0 +1,14 @@
+{
+    "source": "data/processed/kc_house_data_per_sqft.csv",
+    "attributes": ["lat", "long"],
+    "autoscale": "True",
+    "split": {
+        "type": "sequential",
+        "column": "date",
+        "fraction": 0.6
+    },
+    "target": {
+        "column": "price_per_sqft",
+        "normalizer": 1000.0
+    }
+}

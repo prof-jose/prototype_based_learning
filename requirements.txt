@@ -1,0 +1,6 @@
+pytest
+pytest-cov
+tensorflow
+tensorflow-probability
+scikit-learn
+pandas

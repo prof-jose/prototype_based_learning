@@ -1,0 +1,9 @@
+__pycache__/
+.env_proto/
+.vscode
+.pytest_cache/
+.coverage
+
+# Downloaded data
+data/banknote.txt
+data/kc_house_data.csv
