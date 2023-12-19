@@ -2,6 +2,7 @@ test:
 	python -m pytest -v --cov=protolearn --cov-report=term-missing protolearn/tests
 
 get-data: get-banknote-data get-kc-data
+	python3 data/scripts/price_per_sqft.py
 
 get-banknote-data:
 	wget https://archive.ics.uci.edu/static/public/267/banknote+authentication.zip
