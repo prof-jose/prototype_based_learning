@@ -2,6 +2,16 @@
 
 Implementation of prototype-based learning for tabular data. 
 
+Prototype-based learning is a supervised machine learning model where predictions are based on comparing the input to a set of "prototypes", where close prototypes have a stronger influece on the output.
+
+A prototype can be understood as a representative sample, both in terms of the input and output variables. 
+
+Both the prototypes features and "values" are determined from the training process.
+
+![image](screenshot.png)
+
+ The image displays a simple example of a dataset of 2 features, 1 binary output. The squares represent the learned prototypes, summarizing the dataset. 
+
 ## Installation
 
 1-  Get the data by runing `make get-data` (or see manual download instructions below). 
