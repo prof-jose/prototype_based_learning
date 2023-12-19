@@ -1,0 +1,14 @@
+{
+    "source": "data/kc_house_data.csv",
+    "attributes": ["lat", "long"],
+    "autoscale": "True",
+    "split": {
+        "type": "sequential",
+        "column": "date",
+        "fraction": 0.5
+    },
+    "target": {
+        "column": "price",
+        "normalizer": 1000000
+    }
+}
