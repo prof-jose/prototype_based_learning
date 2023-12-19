@@ -220,6 +220,7 @@ def test_model_wrapper():
         verbose=False, restart=False, trainable_scales=True
     )
 
+    X += np.random.normal(0, 0.1, X.shape)
     model.fit(X, y)
 
     # Make sure scales are different from 0.1
