@@ -1,5 +1,6 @@
 
 import numpy as np
+import pytest
 import tensorflow as tf
 from tensorflow.keras.optimizers import Adam
 from protolearn.model import (
@@ -179,6 +180,11 @@ def test_model_wrapper():
     X += np.random.normal(0, 0.1, X.shape)
     y += np.random.normal(0, 0.1, y.shape)
 
+    # Try to predict with unfitted model and verify exception
+    with pytest.raises(Exception) as e_info:
+        preds = model.predict(X)
+    assert str(e_info.value) == "Model not fitted yet"
+
     model.fit(X, y)
 
     # Zero epochs = kmeans
@@ -191,13 +197,20 @@ def test_model_wrapper():
     model = PrototypeModel(
         n_prototypes=2, scale=.1, reg_constant=0.0,
         learning_rate=0.01, epochs=3, batch_size=256,
-        verbose=False, restart=False
+        verbose=False, restart=True, init_method="random_pick"
     )
     model.fit(X, y)
 
     # Make sure loss decreases
     losses = model._training_log.history['loss']
     assert losses[0] > losses[-1]
+
+    model = PrototypeModel(
+        n_prototypes=2, scale=.1, reg_constant=0.0,
+        learning_rate=0.01, epochs=5, batch_size=256,
+        verbose=False, restart=True, init_method="kmeans"
+    )
+    model.fit(X, y)
 
     # Make sure prototypes are correct
     np.testing.assert_almost_equal(prototypes.sum(), 2.0, 2)
@@ -207,8 +220,23 @@ def test_model_wrapper():
     # Make sure predictions are correct
     X1 = np.array([[1., 0.]])
     preds = model.predict(X1)
-    np.testing.assert_almost_equal(preds[0][0], -1.0, 2)
+    np.testing.assert_almost_equal(preds[0][0] + 1.0, 0.0, 2)
+    X2 = np.array([[0., 1.]])
+    preds = model.predict(X2)
+    np.testing.assert_almost_equal(preds[0][0] - 1.0, 0.0, 2)
 
+    # Make sure importances are correct
+    importances = model.get_importances(X)
+    print(importances)
+    sign1 = np.sign(importances[0][0] - importances[0][1])
+    sign2 = np.sign(importances[-1][0] - importances[-1][1])
+    sign3 = np.sign(importances[499][0] - importances[499][1])
+    sign4 = np.sign(importances[500][0] - importances[500][1])
+
+    assert sign1 != sign2
+    assert sign1 == sign3
+    assert sign2 == sign4
+    
     # Assert that scale is 0.1
     #np.testing.assert_almost_equal(model.get_scales(), 0.1, 2)
     assert np.abs(model.get_scales()-.1).sum() < 0.01
@@ -226,3 +254,27 @@ def test_model_wrapper():
     # Make sure scales are different from 0.1
     print(model.get_scales())
     assert np.abs(model.get_scales()-.1).sum() > 0.01
+
+    assert model.get_prototype_values().shape[0] == model.get_prototypes().shape[0]
+
+
+def test_init_means_and_values():
+    model = PrototypeModel(
+        n_prototypes=2, scale=1, reg_constant=0.0,
+        learning_rate=0.01, epochs=1, batch_size=256,
+        verbose=False, restart=False
+    )
+
+    X = np.array([[1., 0.]]*500 + [[0., 1.]]*500)
+    y = np.array([[-1.]]*500 + [[1.]]*500)
+
+    X += np.random.normal(0, 0.1, X.shape)
+    y += np.random.normal(0, 0.1, y.shape)
+
+    model.fit(X, y)
+    init_means = model.get_initial_prototypes()
+
+    model.fit(X, y)
+    init_means2 = model.get_initial_prototypes()
+
+    np.testing.assert_almost_equal(init_means, init_means2, 2)
