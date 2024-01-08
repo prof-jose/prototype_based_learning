@@ -75,55 +75,10 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
         self : PrototypeModel
             A reference to the fitted model.
         """
-        return self._fit_full(X, y)
-
-    def _fit_full(self, X, y):
-        """
-        Fit the model to the data.
-
-        Parameters
-        ----------
-        X : array-like
-            Input data.
-        y : array-like
-            Target values.
-
-        Returns
-        -------
-        self : PrototypeModel
-            A reference to the fitted model.
-        """
 
         if not (self._fitted) or self.restart:
+            self._init_model_for_fit(X, y)
 
-            means, vals = init_means_and_values(
-                X, y, self.n_prototypes, self.init_method
-                )
-
-            self._initial_means = means
-            self._initial_values = vals
-
-            self._model = get_rlvq_model(
-                dim=X.shape[1],
-                n_prototypes=self.n_prototypes,
-                means=means,
-                values=vals,
-                reg_constant=self.reg_constant,
-                scale=self.scale,
-                trainable_scales=self.trainable_scales
-                )
-
-            self._model.compile(
-                loss='mse',
-                optimizer=Adam(learning_rate=self.learning_rate),
-                metrics='mse'
-                )
-
-            # Auxiliary model for getting the importances
-            self._importance_model = Model(
-                inputs=self._model.input,
-                outputs=self._model.layers[-2].output
-            )
 
         self._training_log = self._model.fit(
             X, y,
@@ -135,6 +90,39 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
         self._fitted = True
 
         return self
+
+    def _init_model_for_fit(self, X, y):
+        """Fit model once (or again)."""
+
+        means, vals = init_means_and_values(
+            X, y, self.n_prototypes, self.init_method
+            )
+
+        self._initial_means = means
+        self._initial_values = vals
+
+        self._model = get_rlvq_model(
+            dim=X.shape[1],
+            n_prototypes=self.n_prototypes,
+            means=means,
+            values=vals,
+            reg_constant=self.reg_constant,
+            scale=self.scale,
+            trainable_scales=self.trainable_scales
+            )
+
+        self._model.compile(
+            loss='mse',
+            optimizer=Adam(learning_rate=self.learning_rate),
+            metrics='mse'
+            )
+
+        # Auxiliary model for getting the importances
+        self._importance_model = Model(
+            inputs=self._model.input,
+            outputs=self._model.layers[-2].output
+        )
+
 
     def predict(self, X):
         """
@@ -185,3 +173,4 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
             Importance of each prototype for each data point.
         """
         return self._importance_model.predict(X)
+
