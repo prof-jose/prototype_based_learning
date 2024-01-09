@@ -57,7 +57,7 @@ def test_get_model_values():
     assert np.all(model.layers[-1].trainable_weights[0].numpy() == values)
 
 
-def test_init_means_and_values():
+def test_means_and_values():
     # Test that the means and values are initialized correctly
     X = np.array([[1., 0.], [0., 1.]])
     X = np.repeat(X, 10, axis=0)
@@ -93,6 +93,12 @@ def test_init_means_and_values():
     mv3, vv3 = init_means_and_values(X2, y2, X2.shape[0], method="random_pick")
     assert np.sum(mv3) == np.sum(X2)
     assert np.sum(vv3) == np.sum(y2)
+
+    # Test the unimplemented exception
+    with pytest.raises(Exception) as e_info:
+        mv3, vv3 = init_means_and_values(X2, y2, X2.shape[0], method="genetic_algorithm")
+    print(str(e_info.value))
+    assert str(e_info.value).startswith("Unknown method")
 
 
 def test_prototype_layer():
