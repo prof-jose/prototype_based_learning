@@ -18,6 +18,9 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
         """
         Implementation of prototype-based model as a sklearn-like class.
 
+        This version finds prototypes directly in the input space.
+        For a version that first embeds the data, see PrototypeFullModel.
+
         Parameters
         ----------
         n_prototypes : int
@@ -185,6 +188,9 @@ class PrototypeFullModel(PrototypeModel):
         """
         Implementation of prototype-based model as a sklearn-like class.
 
+        This version first embeds the data and then finds prototypes in the
+        embedding space, using a provided embedding network architecture.
+
         Parameters
         ----------
         n_prototypes : int
@@ -288,6 +294,10 @@ class PrototypeFullModel(PrototypeModel):
         """Get the prototypes of the model."""
         return self._submodel.layers[1].weights[0].numpy()
     
+    def get_scales(self):
+        """Get the scales of the model."""
+        return self._submodel.layers[1].weights[1].numpy()
+     
     def get_prototype_values(self):
         """Get the prototype values of the model."""""
         return self._submodel.layers[-1].weights[0].numpy().flatten()
