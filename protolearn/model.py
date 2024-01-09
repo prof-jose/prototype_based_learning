@@ -107,7 +107,7 @@ class PrototypeLayer(tf.keras.layers.Layer):
 
 def get_rlvq_model(dim=2, n_prototypes=3, scale=0.1, reg_constant=0.001,
                    means=None, values=None, activation="linear",
-                   trainable_scales=False):
+                   trainable_scales=False, regularize_samples=False):
     """
     Get a RLVQ model with specified parameters.
 
@@ -141,7 +141,8 @@ def get_rlvq_model(dim=2, n_prototypes=3, scale=0.1, reg_constant=0.001,
 
     loglike = PrototypeLayer(units=n_prototypes, scale=scale,
                              eta=reg_constant, means=means,
-                             trainable_scales=trainable_scales)(input)
+                             trainable_scales=trainable_scales,
+                             regularize_samples=regularize_samples)(input)
     probs = tf.keras.layers.Softmax(name="softmax")(-loglike)
     if values is None:
         regression = tf.keras.layers.Dense(

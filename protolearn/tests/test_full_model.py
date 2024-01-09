@@ -61,3 +61,19 @@ def test_full_model():
     assert model.get_prototype_values().shape == (3,)
 
     assert model.get_scales().shape == (3, 2)
+
+    # Test optional regularization
+
+    assert "mean_sample_dist" not in model._model.metrics_names
+
+     # Create a model with 3 prototypes
+    model2 = PrototypeFullModel(
+        n_prototypes=3, scale=.1, reg_constant=0.0,
+        learning_rate=0.0001, epochs=1, batch_size=50,
+        verbose=False, restart=True, init_method="kmeans",
+        network=embedding_network, regularize_samples=True
+    )
+
+    model2.fit(X, y)
+
+    assert "mean_sample_dist" in model2._model.metrics_names

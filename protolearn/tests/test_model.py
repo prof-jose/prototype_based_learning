@@ -207,6 +207,9 @@ def test_model_wrapper():
     )
     model.fit(X, y)
 
+    # Make sure optional regularization is disabled
+    assert "mean_sample_dist" not in model._model.metrics_names
+
     # Make sure loss decreases
     losses = model._training_log.history['loss']
     assert losses[0] > losses[-1]
@@ -284,3 +287,22 @@ def test_init_means_and_values():
     init_means2 = model.get_initial_prototypes()
 
     np.testing.assert_almost_equal(init_means, init_means2, 2)
+
+
+def test_optional_regularization():
+    
+    X = np.array([[1., 0.]]*500 + [[0., 1.]]*500)
+    y = np.array([[-1.]]*500 + [[1.]]*500)
+
+    X += np.random.normal(0, 0.1, X.shape)
+    y += np.random.normal(0, 0.1, y.shape)
+
+    model = PrototypeModel(
+        n_prototypes=2, scale=1, reg_constant=0.0,
+        learning_rate=0.01, epochs=1, batch_size=256,
+        verbose=False, restart=False, regularize_samples=True
+    )
+
+    model.fit(X, y)
+
+    assert "mean_sample_dist" in model._model.metrics_names
