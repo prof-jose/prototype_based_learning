@@ -20,7 +20,7 @@ def test_full_model():
     # Create a model with 3 prototypes
     model = PrototypeFullModel(
         n_prototypes=3, scale=.1, reg_constant=0.0,
-        learning_rate=0.001, epochs=10, batch_size=50,
+        learning_rate=0.0001, epochs=10, batch_size=50,
         verbose=False, restart=True, init_method="kmeans",
         network=embedding_network
     )
@@ -50,3 +50,5 @@ def test_full_model():
 
     # The size of the prototype values should be 3
     assert model.get_prototype_values().shape == (3,)
+
+    assert model.get_scales().shape == (3, 2)
