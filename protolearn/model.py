@@ -189,5 +189,5 @@ def init_means_and_values(X, y, n_prototypes, method="kmeans"):
             means[i, :] = X[idx[i], :]
             values[i] = y[idx[i]]
     else:
-        raise NotImplementedError("Unknown method: ", method)
+        raise NotImplementedError(f"Unknown method: {method}")
     return means, values
