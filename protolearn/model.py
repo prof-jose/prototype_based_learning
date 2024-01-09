@@ -15,7 +15,7 @@ class PrototypeLayer(tf.keras.layers.Layer):
 
     def __init__(
             self, units=3, scale=1.0, eta=1e-4, means=None,
-            trainable_scales=False
+            trainable_scales=False, regularize_samples=False
             ):
         """
         Define a probabilistic layer that computes the log-likelihood of the
@@ -42,6 +42,7 @@ class PrototypeLayer(tf.keras.layers.Layer):
         self._scale = scale
         self._means_init = means
         self._trainable_scales = trainable_scales
+        self._regularize_samples = regularize_samples
 
     def build(self, input_shape):
         """
@@ -89,15 +90,24 @@ class PrototypeLayer(tf.keras.layers.Layer):
         """
 
         distances = tf.norm(X[:, None, :] - self._means, axis=-1)
+
+        # Regularization term: Make sure each prototype is close to a sample
         avg_min_distance = tf.reduce_mean(tf.reduce_min(distances, axis=0))
         self.add_metric(avg_min_distance, name="mean_of_radii")
         self.add_loss(self._eta*avg_min_distance)
+
+        # Optional regularization term: Make sure each sample is close to a prototype
+        if self._regularize_samples:
+            avg_min_distance = tf.reduce_mean(tf.reduce_min(distances, axis=1))
+            self.add_metric(avg_min_distance, name="mean_sample_dist")
+            self.add_loss(self._eta*avg_min_distance)
+
         return -self._prototype_dist.log_prob(X[:, None, :])
 
 
 def get_rlvq_model(dim=2, n_prototypes=3, scale=0.1, reg_constant=0.001,
                    means=None, values=None, activation="linear",
-                   trainable_scales=False):
+                   trainable_scales=False, regularize_samples=False):
     """
     Get a RLVQ model with specified parameters.
 
@@ -131,7 +141,8 @@ def get_rlvq_model(dim=2, n_prototypes=3, scale=0.1, reg_constant=0.001,
 
     loglike = PrototypeLayer(units=n_prototypes, scale=scale,
                              eta=reg_constant, means=means,
-                             trainable_scales=trainable_scales)(input)
+                             trainable_scales=trainable_scales,
+                             regularize_samples=regularize_samples)(input)
     probs = tf.keras.layers.Softmax(name="softmax")(-loglike)
     if values is None:
         regression = tf.keras.layers.Dense(
@@ -176,6 +187,7 @@ def init_means_and_values(X, y, n_prototypes, method="kmeans"):
         kmeans = KMeans(n_clusters=n_prototypes, n_init="auto")
         kmeans.fit(X)
         means = kmeans.cluster_centers_
+        print(means)
         values = np.zeros((n_prototypes, 1))
         for i in range(n_prototypes):
             values[i] = np.mean(y[kmeans.labels_ == i])

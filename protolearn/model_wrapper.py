@@ -14,7 +14,8 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
     def __init__(self, n_prototypes=3, scale=0.1, reg_constant=0.001,
                  learning_rate=0.001, epochs=100, batch_size=256,
                  verbose=False, restart=False, validation_data=None,
-                 init_method="kmeans", trainable_scales=False):
+                 init_method="kmeans", trainable_scales=False,
+                 regularize_samples=False):
         """
         Implementation of prototype-based model as a sklearn-like class.
 
@@ -62,6 +63,7 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
         self.validation_data = validation_data
         self.init_method = init_method
         self.trainable_scales = trainable_scales
+        self.regularize_samples = regularize_samples
 
     def fit(self, X, y):
         """
@@ -112,7 +114,8 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
             values=vals,
             reg_constant=self.reg_constant,
             scale=self.scale,
-            trainable_scales=self.trainable_scales
+            trainable_scales=self.trainable_scales,
+            regularize_samples=self.regularize_samples
             )
 
         self._model.compile(
@@ -184,7 +187,8 @@ class PrototypeFullModel(PrototypeModel):
     def __init__(self, n_prototypes=3, scale=0.1, reg_constant=0.001,
                  learning_rate=0.001, epochs=100, batch_size=256,
                  verbose=False, restart=False, validation_data=None,
-                 init_method="kmeans", trainable_scales=False, network=None):
+                 init_method="kmeans", trainable_scales=False, 
+                 regularize_samples=False, network=None):
         """
         Implementation of prototype-based model as a sklearn-like class.
 
@@ -229,7 +233,8 @@ class PrototypeFullModel(PrototypeModel):
 
         super().__init__(n_prototypes, scale, reg_constant, learning_rate,
                          epochs, batch_size, verbose, restart,
-                         validation_data, init_method, trainable_scales)
+                         validation_data, init_method, trainable_scales, 
+                         regularize_samples)
         self.network = network
 
 
@@ -270,7 +275,8 @@ class PrototypeFullModel(PrototypeModel):
             values=vals,
             reg_constant=self.reg_constant,
             scale=self.scale,
-            trainable_scales=self.trainable_scales
+            trainable_scales=self.trainable_scales,
+            regularize_samples=self.regularize_samples
             )
         
         # Now the model should be the composition of the embedding and the submodel

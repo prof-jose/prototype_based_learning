@@ -1,13 +1,22 @@
 import numpy as np
 from protolearn.model_wrapper import PrototypeFullModel
 import tensorflow as tf
+import numpy as np
+from numpy.random import seed
+import random as ra
 
 
 def test_full_model():
 
+    # Set seeds for reproducibility
+    seed(1)
+    tf.random.set_seed(2)
+    ra.seed(1)
+
     # Create a dataset with 2 classes and 3 dimensions
     X = np.array([[1., 0., 0.], [0., 1., 0], [0., 0., 1.]])
     X = np.repeat(X, 100, axis=0)
+    X += np.random.normal(0, 0.05, X.shape)
     y = np.array([0., 1., 2.])
     y = np.repeat(y, 100, axis=0)
 
@@ -52,3 +61,19 @@ def test_full_model():
     assert model.get_prototype_values().shape == (3,)
 
     assert model.get_scales().shape == (3, 2)
+
+    # Test optional regularization
+
+    assert "mean_sample_dist" not in model._model.metrics_names
+
+     # Create a model with 3 prototypes
+    model2 = PrototypeFullModel(
+        n_prototypes=3, scale=.1, reg_constant=0.0,
+        learning_rate=0.0001, epochs=1, batch_size=50,
+        verbose=False, restart=True, init_method="kmeans",
+        network=embedding_network, regularize_samples=True
+    )
+
+    model2.fit(X, y)
+
+    assert "mean_sample_dist" in model2._model.metrics_names
