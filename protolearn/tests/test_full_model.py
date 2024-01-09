@@ -1,13 +1,22 @@
 import numpy as np
 from protolearn.model_wrapper import PrototypeFullModel
 import tensorflow as tf
+import numpy as np
+from numpy.random import seed
+import random as ra
 
 
 def test_full_model():
 
+    # Set seeds for reproducibility
+    seed(1)
+    tf.random.set_seed(2)
+    ra.seed(1)
+
     # Create a dataset with 2 classes and 3 dimensions
     X = np.array([[1., 0., 0.], [0., 1., 0], [0., 0., 1.]])
     X = np.repeat(X, 100, axis=0)
+    X += np.random.normal(0, 0.05, X.shape)
     y = np.array([0., 1., 2.])
     y = np.repeat(y, 100, axis=0)
 
