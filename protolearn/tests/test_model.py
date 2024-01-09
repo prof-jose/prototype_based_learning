@@ -213,7 +213,7 @@ def test_model_wrapper():
     model.fit(X, y)
 
     # Make sure prototypes are correct
-    np.testing.assert_almost_equal(prototypes.sum(), 2.0, 2)
+    np.testing.assert_almost_equal(prototypes.sum() - 2.0, 0.0, 2)
     np.testing.assert_almost_equal(prototypes.sum(axis=0).mean(), 1.0, 2)
     np.testing.assert_almost_equal(prototypes.sum(axis=1).mean(), 1.0, 2)
 
