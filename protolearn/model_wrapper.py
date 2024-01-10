@@ -49,6 +49,10 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
         trainable_scales : bool
             Whether to train the scales.
             If True, the value given in scale is the initializer.
+        regularize_samples : bool
+            Whether to add a regularization term for average of
+            the minimum prototype-to-sample distances
+            (on top of the regularization term for the prototypes).
         """
 
         self.n_prototypes = n_prototypes
@@ -84,7 +88,6 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
 
         if not (self._fitted) or self.restart:
             self._init_model_for_fit(X, y)
-
 
         self._training_log = self._model.fit(
             X, y,
@@ -129,7 +132,6 @@ class PrototypeModel(BaseEstimator, RegressorMixin):
             inputs=self._model.input,
             outputs=self._model.layers[-2].output
         )
-
 
     def predict(self, X):
         """
@@ -187,7 +189,7 @@ class PrototypeFullModel(PrototypeModel):
     def __init__(self, n_prototypes=3, scale=0.1, reg_constant=0.001,
                  learning_rate=0.001, epochs=100, batch_size=256,
                  verbose=False, restart=False, validation_data=None,
-                 init_method="kmeans", trainable_scales=False, 
+                 init_method="kmeans", trainable_scales=False,
                  regularize_samples=False, network=None):
         """
         Implementation of prototype-based model as a sklearn-like class.
@@ -224,22 +226,20 @@ class PrototypeFullModel(PrototypeModel):
             If True, the value given in scale is the initializer.
         network : tf.keras.models.Model
             Custom network to use as projection before the prototype layer.
-
-        Returns
-        -------
-        self : PrototypeModel
-            A reference to the fitted model.
+        regularize_samples : bool
+            Whether to add a regularization term for average of
+            the minimum prototype-to-sample distances
+            (on top of the regularization term for the prototypes).
         """
 
         super().__init__(n_prototypes, scale, reg_constant, learning_rate,
                          epochs, batch_size, verbose, restart,
-                         validation_data, init_method, trainable_scales, 
+                         validation_data, init_method, trainable_scales,
                          regularize_samples)
         self.network = network
 
-
     def _init_model_for_fit(self, X, y):
-        
+
         # First we need to fit the network on a regression task
         input_layer = self.network.input
         embedding_layer = self.network(input_layer)
@@ -262,9 +262,10 @@ class PrototypeFullModel(PrototypeModel):
 
         # Now we can fit the prototype layer
         means, vals = init_means_and_values(
-            self._embedding_model.predict(X), y, self.n_prototypes, self.init_method
+            self._embedding_model.predict(X), y, self.n_prototypes,
+            self.init_method
             )
-        
+
         self._initial_means = means
         self._initial_values = vals
 
@@ -278,8 +279,9 @@ class PrototypeFullModel(PrototypeModel):
             trainable_scales=self.trainable_scales,
             regularize_samples=self.regularize_samples
             )
-        
-        # Now the model should be the composition of the embedding and the submodel
+
+        # Now the model should be the composition of the embedding and the
+        # submodel
         input_layer = self.network.input
         embedding_layer = self.network(input_layer)
         output_layer = self._submodel(embedding_layer)
@@ -289,7 +291,7 @@ class PrototypeFullModel(PrototypeModel):
             loss='mse',
             optimizer=Adam(learning_rate=self.learning_rate)
             )
-        
+
         # Auxiliary model for getting the importances
         self._importance_model = Model(
             inputs=self._model.input,
@@ -299,12 +301,11 @@ class PrototypeFullModel(PrototypeModel):
     def get_prototypes(self):
         """Get the prototypes of the model."""
         return self._submodel.layers[1].weights[0].numpy()
-    
+
     def get_scales(self):
         """Get the scales of the model."""
         return self._submodel.layers[1].weights[1].numpy()
-     
+
     def get_prototype_values(self):
         """Get the prototype values of the model."""""
         return self._submodel.layers[-1].weights[0].numpy().flatten()
-
