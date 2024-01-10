@@ -1,6 +1,6 @@
 # Prototype-based learning for tabular data
 
-Implementation of prototype-based learning for tabular data. 
+Implementation of prototype-based learning for regression tasks.
 
 Prototype-based learning is a supervised machine learning model where predictions are based on comparing the input to a set of "prototypes", where close prototypes have a stronger influece on the output.
 
