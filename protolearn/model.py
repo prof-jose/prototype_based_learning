@@ -96,7 +96,8 @@ class PrototypeLayer(tf.keras.layers.Layer):
         self.add_metric(avg_min_distance, name="mean_of_radii")
         self.add_loss(self._eta*avg_min_distance)
 
-        # Optional regularization term: Make sure each sample is close to a prototype
+        # Optional regularization term: Make sure each sample is close to a
+        # prototype
         if self._regularize_samples:
             avg_min_distance = tf.reduce_mean(tf.reduce_min(distances, axis=1))
             self.add_metric(avg_min_distance, name="mean_sample_dist")

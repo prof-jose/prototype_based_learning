@@ -96,7 +96,9 @@ def test_means_and_values():
 
     # Test the unimplemented exception
     with pytest.raises(Exception) as e_info:
-        mv3, vv3 = init_means_and_values(X2, y2, X2.shape[0], method="genetic_algorithm")
+        mv3, vv3 = init_means_and_values(
+            X2, y2, X2.shape[0], method="genetic_algorithm"
+            )
     print(str(e_info.value))
     assert str(e_info.value).startswith("Unknown method")
 
@@ -148,7 +150,7 @@ def test_rvlq_model():
     np.testing.assert_almost_equal(mse, 0.0, 2)
 
     # Each prototype is on top of a real point, therefore
-    # mean_radii should be 0
+    # mean_radii should be 0
     np.testing.assert_almost_equal(mean_radii, 0.0, 2)
 
     # loss = 2^2 + 0 + 2^2 over 3
@@ -169,7 +171,7 @@ def test_rvlq_model():
     loss, mse, mean_radii = model2.evaluate(X, np.array([[-1], [0], [1]]))
     np.testing.assert_almost_equal(mse, 0, 2)
     np.testing.assert_almost_equal(mean_radii, 0.0, 2)
-    
+
     # TODO: Add example where mean_radii is not 0
 
 
@@ -207,7 +209,7 @@ def test_model_wrapper():
     )
     model.fit(X, y)
 
-    # Make sure optional regularization is disabled
+    # Make sure optional regularization is disabled
     assert "mean_sample_dist" not in model._model.metrics_names
 
     # Make sure loss decreases
@@ -245,9 +247,9 @@ def test_model_wrapper():
     assert sign1 != sign2
     assert sign1 == sign3
     assert sign2 == sign4
-    
+
     # Assert that scale is 0.1
-    #np.testing.assert_almost_equal(model.get_scales(), 0.1, 2)
+    # np.testing.assert_almost_equal(model.get_scales(), 0.1, 2)
     assert np.abs(model.get_scales()-.1).sum() < 0.01
 
     # Test learnable scales
@@ -264,7 +266,9 @@ def test_model_wrapper():
     print(model.get_scales())
     assert np.abs(model.get_scales()-.1).sum() > 0.01
 
-    assert model.get_prototype_values().shape[0] == model.get_prototypes().shape[0]
+    shape_prototypes = model.get_prototypes().shape
+    shape_prototype_values = model.get_prototype_values().shape
+    assert shape_prototypes[0] == shape_prototype_values[0]
 
 
 def test_init_means_and_values():
@@ -290,7 +294,7 @@ def test_init_means_and_values():
 
 
 def test_optional_regularization():
-    
+
     X = np.array([[1., 0.]]*500 + [[0., 1.]]*500)
     y = np.array([[-1.]]*500 + [[1.]]*500)
 
