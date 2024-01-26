@@ -188,7 +188,6 @@ def init_means_and_values(X, y, n_prototypes, method="kmeans"):
         kmeans = KMeans(n_clusters=n_prototypes, n_init="auto")
         kmeans.fit(X)
         means = kmeans.cluster_centers_
-        print(means)
         values = np.zeros((n_prototypes, 1))
         for i in range(n_prototypes):
             values[i] = np.mean(y[kmeans.labels_ == i])
