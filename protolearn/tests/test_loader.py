@@ -69,3 +69,10 @@ def test_header():
     assert X_train.shape[1] == 2
     np.testing.assert_almost_equal(y_train.min(), 0., 2)
     np.testing.assert_almost_equal(y_train.max(), 1., 2)
+
+
+def test_source():
+    loder = Loader('protolearn/tests/test_config_source.json')
+    X_train, X_test, y_train, y_test = loder.get_splits()
+    assert X_train.shape[1] == X_test.shape[1]
+    assert y_train.shape[0] == y_test.shape[0]

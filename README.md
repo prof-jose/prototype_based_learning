@@ -1,6 +1,13 @@
 # Prototype-based learning for tabular data
 
-Implementation of prototype-based learning for regression tasks.
+Implementation of prototype-based learning for regression tasks. 
+
+This is the code used in the publication 
+[Prototype-based models for real estate valuation: a machine learning model that explains prices](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4695079). 
+
+*Note: This is research-first code, provided for reproducibility, learning and academic study. Use at your own risk. Don't expect anything production-ready, although I did my best to keep it clean, organized and with unit tests.*
+
+### About protoype-based learning
 
 Prototype-based learning is a supervised machine learning model where predictions are based on comparing the input to a set of "prototypes", where close prototypes have a stronger influece on the output.
 
@@ -25,7 +32,6 @@ Create a virtual environment and install the necessary requirements, e.g.
     source .env_proto/bin/activate
     pip install -r requirements.txt
 
-(see `requirements_frozen.txt` to explicitly see all packages and exact versions). 
 
 3- (Optional) Run the tests
 
@@ -34,6 +40,18 @@ Create a virtual environment and install the necessary requirements, e.g.
 ## Notebooks
 
 See the `notebooks/` for examples of usage. 
+
+## Citation
+If you use this code, please cite the following article:
+
+    @article{rodriguez2023prototype,
+    title={Prototype-based models for real estate valuation: a machine learning model that explains prices},
+    author={Rodriguez-Serrano, Jose A},
+    journal={Available at SSRN},
+    year={2023},
+    url={https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4695079}
+    }
+
 
 ## Manual data download
 
@@ -51,3 +69,5 @@ King county dataset:
 
 King county prices per square feet: 
 - Once the previous files are downloaded, run `python data/scripts/price_per_sqft.py`
+
+

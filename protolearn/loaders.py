@@ -34,19 +34,7 @@ class Loader():
         else:
             self._config = config
 
-        header = 0
-        if 'header' in self._config:
-            if self._config['header'] == "None":
-                header = None
-
-        # Make a path concatenating working_dir and source
-        path_to_csv = os.path.join(self._working_dir, self._config['source'])
-
-        self._data = pd.read_csv(
-            path_to_csv,
-            header=header,
-            usecols=self._get_necessary_cols()
-        )
+        self._data = self.read_file(self._config['source'])
 
         target_col = self._config["target"]["column"]
         if 'attributes' not in self._config:
@@ -66,6 +54,24 @@ class Loader():
 
         # Autoscale if needed
         self._data = self._autoscale(self._data)
+
+    def read_file(self, fname):
+        """
+        Read a given file according to the rest of the class configuration.
+        """
+        header = 0
+        if 'header' in self._config:
+            if self._config['header'] == "None":
+                header = None
+
+        # Make a path concatenating working_dir and source
+        path_to_csv = os.path.join(self._working_dir, fname)
+
+        return pd.read_csv(
+            path_to_csv,
+            header=header,
+            usecols=self._get_necessary_cols()
+        )
 
     def _autoscale(self, data):
         """
@@ -147,20 +153,7 @@ class Loader():
                     )
             # Explicitly indicate test split
             elif self._config['split']['type'] == 'source':
-                # TODO: Refactor this
-                header = 0
-                if 'header' in self._config:
-                    header = self._config['header']
-                print(self._get_necessary_cols())
-                path_to_source = os.path.join(
-                    self._working_dir,
-                    self._config['split']['source']
-                    )
-                test_source = pd.read_csv(
-                    path_to_source,
-                    header=header,
-                    usecols=self._get_necessary_cols()
-                )
+                test_source = self.read_file(self._config['split']['source'])
             else:
                 raise NotImplementedError(
                     "Unknown split type: ", self._config['split']['type']
