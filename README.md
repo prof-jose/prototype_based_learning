@@ -5,7 +5,7 @@ Implementation of prototype-based learning for regression tasks.
 This is the code used in the publication 
 [Prototype-based models for real estate valuation: a machine learning model that explains prices](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4695079). 
 
-*Note: This is research-first code, provided for reproducibility, learning and academic study -- don't expect production-ready, although I did my best to keep it clean, organized and with unit tests. 
+*Note: This is research-first code, provided for reproducibility, learning and academic study -- don't expect production-ready, although I did my best to keep it clean, organized and with unit tests.*
 
 ### About protoype-based learning
 
@@ -42,7 +42,7 @@ Create a virtual environment and install the necessary requirements, e.g.
 See the `notebooks/` for examples of usage. 
 
 ## Citation
-This code was developed as part of academic research. If you use this code, please cite the following article:
+If you use this code, please cite the following article:
 
     @article{rodriguez2023prototype,
     title={Prototype-based models for real estate valuation: a machine learning model that explains prices},
