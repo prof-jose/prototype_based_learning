@@ -28,6 +28,9 @@ def test_split():
     diff = len(X_train) - len(X_test)
     assert diff == 1 or diff == 0 or diff == -1
 
+    normalizer = loader.get_target_normalizer()
+    np.testing.assert_almost_equal(normalizer, 1000000, 2)
+
     # Test autoscale
     loader = Loader('protolearn/tests/test_config_autoscale.json')
     X_train, X_test, y_train, y_test = loader.get_splits()
@@ -69,6 +72,13 @@ def test_header():
     assert X_train.shape[1] == 2
     np.testing.assert_almost_equal(y_train.min(), 0., 2)
     np.testing.assert_almost_equal(y_train.max(), 1., 2)
+
+    # This json file does not specify a normalizer
+    normalizer = loader.get_target_normalizer()
+    assert normalizer is None
+
+    normalizer = loader.get_target_normalizer(force_numeric=True)
+    np.testing.assert_almost_equal(normalizer, 1.0, 2)
 
 
 def test_source():

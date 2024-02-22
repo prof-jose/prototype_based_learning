@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn import preprocessing as pre
 import os
 import numpy as np
+import pyreadr
 
 
 class Loader():
@@ -193,3 +194,11 @@ class Loader():
                 y_test = y_test / self._config['target']['normalizer']
 
         return X_train, X_test, y_train, y_test
+
+    def get_target_normalizer(self, force_numeric=False):
+        if 'normalizer' in self._config['target']:
+            return self._config['target']['normalizer']
+        if force_numeric:
+            return 1.0
+
+        return None
