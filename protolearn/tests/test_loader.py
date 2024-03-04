@@ -82,7 +82,32 @@ def test_header():
 
 
 def test_source():
-    loder = Loader('protolearn/tests/test_config_source.json')
-    X_train, X_test, y_train, y_test = loder.get_splits()
+    loader = Loader('protolearn/tests/test_config_source.json')
+    X_train, X_test, y_train, y_test = loader.get_splits()
     assert X_train.shape[1] == X_test.shape[1]
     assert y_train.shape[0] == y_test.shape[0]
+
+    # Now try source and autoscale
+    x_mean = X_train.mean(axis=0)
+    x_std = X_train.std(axis=0)
+    xt_mean = X_test.mean(axis=0)
+
+    for i in range(0, 2):
+        assert abs(x_mean[i]) > 0
+        assert x_std[i] != 1
+
+    loader._config['autoscale'] = "True"
+    spec = loader._config
+    loader = Loader(spec)
+    X_train2, X_test2, y_train2, y_test2 = loader.get_splits()
+
+    x_mean_after = X_train2.mean(axis=0)
+    x_std_after = X_train2.std(axis=0)
+    xt_mean_after = X_test2.mean(axis=0)
+
+    for i in range(0, 2):
+        np.testing.assert_almost_equal(x_mean_after[i], 0., 1)
+        np.testing.assert_almost_equal(x_std_after[i], 1., 1)
+
+        expected = (xt_mean[i] - x_mean[i])/x_std[i]
+        np.testing.assert_almost_equal(xt_mean_after[i], expected, 2)

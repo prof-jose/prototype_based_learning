@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn import preprocessing as pre
 import os
 import numpy as np
-import pyreadr
+from sklearn.preprocessing import StandardScaler
 
 
 class Loader():
@@ -74,7 +74,35 @@ class Loader():
             usecols=self._get_necessary_cols()
         )
 
-    def _autoscale(self, data):
+    def _autoscale(self, data, train=True):
+        """
+        Autoscale the data if specified in the configuration.
+
+        Parameters
+        ----------
+        data : pandas.DataFrame
+            Data to be autoscaled.
+
+        Returns
+        -------
+        output : pandas.DataFrame
+            Autoscaled data.
+        """
+        output = data.copy()
+        if 'autoscale' in self._config:
+            if self._config['autoscale'] == "True":
+                print("Autoscaling data")
+                # Apply standard scaling to all columns
+                print("*** Scaling data: ")
+                if train:
+                    self._scaler = StandardScaler().set_output(transform="pandas")
+                    output[self._config['attributes']] = self._scaler.fit_transform(data[self._config['attributes']])
+                else:
+                    output[self._config['attributes']] = self._scaler.transform(data[self._config['attributes']])
+                return output
+        return data
+
+    def _autoscale_old(self, data):
         """
         Autoscale the data if specified in the configuration.
 
@@ -161,7 +189,7 @@ class Loader():
                     )
             if self._config['split']['type'] == 'source':
                 train_split = self._data
-                test_split = self._autoscale(test_source)
+                test_split = self._autoscale(test_source, train=False)
             else:
                 fraction = self._config['split']['fraction']
                 n_items = len(sorted_data)
