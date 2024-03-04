@@ -93,3 +93,10 @@ def test_sklearn():
     X_train, X_test, y_train, y_test = loader.get_splits()
     assert X_train.shape[1] == 64
     assert X_test.shape[1] == 64
+
+
+def test_sklearn_projection():
+    loader = Loader('protolearn/tests/test_config_sklearn_proj.json')
+    X_train, X_test, y_train, y_test = loader.get_splits()
+    assert X_train.shape[1] == 2
+    assert X_test.shape[1] == 2

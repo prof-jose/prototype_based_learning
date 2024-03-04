@@ -205,6 +205,21 @@ class Loader():
             y_train = train_split[self._config['target']['column']]
             y_test = test_split[self._config['target']['column']]
 
+            # Apply projection if exists
+            if 'projection' in self._config:
+                # UMAP projection
+                if self._config['projection']['type'] == 'UMAP':
+                    umap = UMAP(
+                        n_components=self._config['projection']['n_components']
+                    )
+                    X_train = umap.fit_transform(X_train)
+                    X_test = umap.transform(X_test)
+                else:
+                    raise NotImplementedError(
+                        "Unknown projection type: ",
+                        self._config['projection']['type']
+                        )
+
             # Apply transformation if exists
             if 'transformation' in self._config['target']:
                 # Log
