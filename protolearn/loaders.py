@@ -8,7 +8,8 @@ import pandas as pd
 from sklearn import preprocessing as pre
 import os
 import numpy as np
-import pyreadr
+from sklearn.datasets import load_digits
+from umap import UMAP
 
 
 class Loader():
@@ -35,9 +36,16 @@ class Loader():
         else:
             self._config = config
 
-        self._data = self.read_file(self._config['source'])
+        if self._config['source'] == "sklearn":  # Load sklearn dataset
+            self._data = self.load_sklearn_source()
+            self._config['target'] = {
+                "column": "sklearn_target"
+            }
+        else:  # Load from file
+            self._data = self.read_file(self._config['source'])
 
         target_col = self._config["target"]["column"]
+
         if 'attributes' not in self._config:
             self._config['attributes'] = self._data.columns.drop(target_col)
 
@@ -73,6 +81,27 @@ class Loader():
             header=header,
             usecols=self._get_necessary_cols()
         )
+
+    def load_sklearn_source(self):
+        """
+        Load data from sklearn datasets.
+        """
+        if self._config['sklearn']['name'] == "load_digits":
+            digits_data = load_digits()
+            n_samples = len(digits_data.images)
+            df = pd.DataFrame(
+                digits_data.data.reshape(n_samples, -1),
+                columns=digits_data.feature_names
+            )
+            print("Feature names: ", digits_data.feature_names)
+            df['sklearn_target'] = digits_data.target
+
+        else:
+            raise NotImplementedError(
+                "Not supported dataset: ", self._config['sklearn']['name']
+            )
+
+        return df
 
     def _autoscale(self, data):
         """

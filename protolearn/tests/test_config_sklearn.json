@@ -1,0 +1,12 @@
+{
+    "source": "sklearn",
+    "sklearn": {
+        "name": "load_digits",
+        "reshape": "True"   
+    },
+    "autoscale": "True",
+    "split": {
+        "type": "random",
+        "fraction": 0.6
+    }
+}

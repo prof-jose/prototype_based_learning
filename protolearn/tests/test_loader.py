@@ -86,3 +86,10 @@ def test_source():
     X_train, X_test, y_train, y_test = loder.get_splits()
     assert X_train.shape[1] == X_test.shape[1]
     assert y_train.shape[0] == y_test.shape[0]
+
+
+def test_sklearn():
+    loader = Loader('protolearn/tests/test_config_sklearn.json')
+    X_train, X_test, y_train, y_test = loader.get_splits()
+    assert X_train.shape[1] == 64
+    assert X_test.shape[1] == 64
