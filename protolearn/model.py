@@ -196,8 +196,8 @@ def init_means_and_values(X, y, n_prototypes, method="kmeans"):
         values = np.zeros((n_prototypes, 1))
         idx = np.random.choice(X.shape[0], n_prototypes, replace=False)
         for i in range(n_prototypes):
-            print(idx[i])
-            print(X[idx[i], :])
+#            print(idx[i])
+#            print(X[idx[i], :])
             means[i, :] = X[idx[i], :]
             values[i] = y[idx[i]]
     else:
